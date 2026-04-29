@@ -9,7 +9,9 @@ if (fs.existsSync(authPath)) {
 }
 
 const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion } = require('@whiskeysockets/baileys');
-const qrcode = require('qrcode-terminal');
+
+// PUT YOUR PHONE NUMBER HERE WITH COUNTRY CODE
+const YOUR_PHONE_NUMBER = "+2349046417629"; 
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
@@ -18,23 +20,24 @@ async function startBot() {
   const sock = makeWASocket({
     auth: state,
     version,
-    browser: ['Ubuntu', 'Chrome', '120.0.0'],
-    qrTimeout: 60000
+    browser: ['Ubuntu', 'Chrome', '120.0.0']
   });
   
   sock.ev.on('creds.update', saveCreds);
 
-  sock.ev.on('connection.update', async (u) => {
-    const { connection, qr } = u;
-    
-    if (qr) {
-      console.log('=== SCAN THIS QR CODE WITH WHATSAPP ===');
-      qrcode.generate(qr, { small: true });
-    }
+  if (!state.creds.registered) {
+    const code = await sock.requestPairingCode(YOUR_PHONE_NUMBER.replace(/\D/g, ''));
+    console.log(`=== YOUR PAIRING CODE ===`);
+    console.log(`   ${code}`);
+    console.log(`=== ENTER THIS IN WHATSAPP: Settings > Linked Devices > Link with phone number ===`);
+  }
 
+  sock.ev.on('connection.update', async (u) => {
+    const { connection, lastDisconnect } = u;
     if (connection === 'close') {
-      console.log('Connection closed, restarting...');
-      startBot();
+      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
+      console.log('Connection closed. Reconnecting:', shouldReconnect);
+      if (shouldReconnect) startBot();
     } else if (connection === 'open') {
       console.log('Connected to WhatsApp');
     }
