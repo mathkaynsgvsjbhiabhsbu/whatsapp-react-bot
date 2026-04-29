@@ -1,11 +1,12 @@
 {
-  "name": "whatsapp-react-bot",
+  "name": "whatsapp-react-botai",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.0"
+    "@whiskeysockets/baileys": "^6.7.9",
+    "qrcode-terminal": "^0.12.0"
   }
 }
