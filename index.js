@@ -28,7 +28,7 @@ async function startBot() {
     console.log('Connection update:', u);
 
     if (!sock.authState.creds.registered && connection === 'connecting') {
-      const phoneNumber = '2349044617629'; // Replace with your number, 234 + number, no +
+      const phoneNumber = '2349046417629'; // Replace with your number, 234 + number, no +
       const code = await sock.requestPairingCode(phoneNumber);
       console.log(`=== YOUR PAIRING CODE: ${code} ===`);
     }
